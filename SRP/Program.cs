@@ -6,7 +6,7 @@ namespace SRP
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(new CalculadoraDeSalario().Calcula(new Funcionario(new Desenvolvedor(), 2000)));
+            Console.WriteLine(new CalculadoraDeSalario().Calcula(new Funcionario(new Desenvolvedor(new DezOuVintePorcento()), 2000)));
         }
     }
 
@@ -14,52 +14,37 @@ namespace SRP
     {
         public double Calcula(Funcionario funcionario)
         {
-            if (funcionario.Cargo is Desenvolvedor)
-            {
-                return DezOuVintePorcento(funcionario);
-            }
-
-            if (funcionario.Cargo is Dba || funcionario.Cargo is Tester)
-            {
-                return QuinzeOuVinteCincoPorcento(funcionario);
-            }
-
-            throw new Exception("funcionario invalido");
-        }
-
-        private double DezOuVintePorcento(Funcionario funcionario)
-        {
-            if (funcionario.SalarioBase > 3000.0)
-            {
-                return funcionario.SalarioBase * 0.8;
-            }
-            else
-            {
-                return funcionario.SalarioBase * 0.9;
-            }
-        }
-
-        private double QuinzeOuVinteCincoPorcento(Funcionario funcionario)
-        {
-            if (funcionario.SalarioBase > 2000.0)
-            {
-                return funcionario.SalarioBase * 0.75;
-            }
-            else
-            {
-                return funcionario.SalarioBase * 0.85;
-            }
+            return funcionario.CalculaSalario();
         }
     }
 
     public abstract class Cargo
     {
-
+        public IRegraDeCalculo Regra { get; private set; }
+        public Cargo(IRegraDeCalculo regra)
+        {
+            Regra = regra;
+        }
     }
 
-    public class Desenvolvedor : Cargo { }
-    public class Dba : Cargo { }
-    public class Tester : Cargo { }
+    public class Desenvolvedor : Cargo
+    {
+        public Desenvolvedor(IRegraDeCalculo regra) : base(regra)
+        {
+        }
+    }
+    public class Dba : Cargo
+    {
+        public Dba(IRegraDeCalculo regra) : base(regra)
+        {
+        }
+    }
+    public class Tester : Cargo
+    {
+        public Tester(IRegraDeCalculo regra) : base(regra)
+        {
+        }
+    }
 
     public class Funcionario
     {
@@ -74,5 +59,9 @@ namespace SRP
             this.SalarioBase = salarioBase;
         }
 
+        public double CalculaSalario()
+        {
+            return Cargo.Regra.Calcula(this);
+        }
     }
 }
