@@ -4,13 +4,11 @@ namespace AcoplamentoEstabilidade
 {
     class GeradorDeNotaFiscal
     {
-        private EnviadorDeEmail email;
-        private NotaFiscalDao dao;
+        IActionAfterNoteGeneration[] _actions;
 
-        public GeradorDeNotaFiscal(EnviadorDeEmail email, NotaFiscalDao dao)
+        public GeradorDeNotaFiscal(IActionAfterNoteGeneration[] actions)
         {
-            this.email = email;
-            this.dao = dao;
+            _actions = actions;
         }
 
         public NotaFiscal Gera(Fatura fatura)
@@ -20,8 +18,10 @@ namespace AcoplamentoEstabilidade
 
             NotaFiscal nf = new NotaFiscal(valor, ImpostoSimplesSobreO(valor));
             Console.WriteLine(nf);
-            email.EnviaEmail(nf);
-            dao.Persiste(nf);
+            foreach (var action in _actions)
+                action.Exec(nf);
+
+
 
             return nf;
         }

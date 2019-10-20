@@ -1,9 +1,9 @@
 using System;
 namespace AcoplamentoEstabilidade
 {
-    class NotaFiscalDao
+    class NotaFiscalDao : IActionAfterNoteGeneration
     {
-        public void Persiste(NotaFiscal nf)
+        public void Exec(NotaFiscal nf)
         {
             Console.WriteLine("Persistindo nota");
         }

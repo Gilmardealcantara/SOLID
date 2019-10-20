@@ -6,7 +6,9 @@ namespace AcoplamentoEstabilidade
     {
         static void Main(string[] args)
         {
-            var geradorDeNotaFiscal = new GeradorDeNotaFiscal(new EnviadorDeEmail(), new NotaFiscalDao());
+            IActionAfterNoteGeneration[] actions = { new EnviadorDeEmail(), new NotaFiscalDao() };
+
+            var geradorDeNotaFiscal = new GeradorDeNotaFiscal(actions);
             geradorDeNotaFiscal.Gera(new Fatura(300, "Gilmar"));
         }
     }
