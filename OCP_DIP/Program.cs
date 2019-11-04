@@ -33,7 +33,15 @@ namespace OCP_DIP
                 return 0;
             }
         }
-        class Frete : IServicoDeEntrega
+        class TabelaDePrecoDiferenciada : ITabelaDePreco
+        {
+            public double DescontoPara(double valor)
+            {
+                return 0.1;
+            }
+        }
+
+        class Correios : IServicoDeEntrega
         {
             public double Para(string cidade)
             {
@@ -42,6 +50,23 @@ namespace OCP_DIP
                     return 15;
                 }
                 return 30;
+            }
+        }
+
+
+        class Transportadora : IServicoDeEntrega
+        {
+            public double Para(string cidade)
+            {
+                if ("SAO PAULO".Equals(cidade.ToUpper()))
+                {
+                    return 70;
+                }
+                if ("BELO HORIZONTE".Equals(cidade.ToUpper()))
+                {
+                    return 5;
+                }
+                return 100;
             }
         }
 
@@ -55,10 +80,17 @@ namespace OCP_DIP
         {
             Console.WriteLine("Test Calc: ");
             TabelaDePrecoPadrao tabela = new TabelaDePrecoPadrao();
-            Frete correios = new Frete();
+            Correios correios = new Correios();
             var calc = new CalculadoraDePrecos(tabela, correios);
             var value = calc.Calcula(new Compra { Valor = 6000.00, Cidade = "SAO PAULO" });
             Console.WriteLine(value);
+
+            Console.WriteLine("Test Calc2: ");
+            TabelaDePrecoDiferenciada tabela2 = new TabelaDePrecoDiferenciada();
+            Transportadora transportadora = new Transportadora();
+            var calc2 = new CalculadoraDePrecos(tabela2, transportadora);
+            var value2 = calc2.Calcula(new Compra { Valor = 6000.00, Cidade = "SAO PAULO" });
+            Console.WriteLine(value2);
         }
     }
 }
