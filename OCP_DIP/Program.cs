@@ -6,19 +6,25 @@ namespace OCP_DIP
     {
         public class CalculadoraDePrecos
         {
+            private readonly ITabelaDePreco _tabela;
+            private readonly IServicoDeEntrega _entrega;
+
+            public CalculadoraDePrecos(ITabelaDePreco tabela, IServicoDeEntrega entrega)
+            {
+                this._tabela = tabela;
+                this._entrega = entrega;
+            }
+
             public double Calcula(Compra produto)
             {
-                TabelaDePrecoPadrao tabela = new TabelaDePrecoPadrao();
-                Frete correios = new Frete();
-
-                double desconto = tabela.DescontoPara(produto.Valor);
-                double frete = correios.Para(produto.Cidade);
+                double desconto = _tabela.DescontoPara(produto.Valor);
+                double frete = _entrega.Para(produto.Cidade);
 
                 return produto.Valor * (1 - desconto) + frete;
             }
         }
 
-        class TabelaDePrecoPadrao
+        class TabelaDePrecoPadrao : ITabelaDePreco
         {
             public double DescontoPara(double valor)
             {
@@ -27,7 +33,7 @@ namespace OCP_DIP
                 return 0;
             }
         }
-        class Frete
+        class Frete : IServicoDeEntrega
         {
             public double Para(string cidade)
             {
@@ -48,7 +54,9 @@ namespace OCP_DIP
         static void Main(string[] args)
         {
             Console.WriteLine("Test Calc: ");
-            var calc = new CalculadoraDePrecos();
+            TabelaDePrecoPadrao tabela = new TabelaDePrecoPadrao();
+            Frete correios = new Frete();
+            var calc = new CalculadoraDePrecos(tabela, correios);
             var value = calc.Calcula(new Compra { Valor = 6000.00, Cidade = "SAO PAULO" });
             Console.WriteLine(value);
         }
